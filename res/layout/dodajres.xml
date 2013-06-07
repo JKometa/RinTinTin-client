@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content">
+    <EditText
+            android:id="@+id/nazwa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginBottom="4dp"
+            android:hint="Nazwa restauracji" android:inputType="text"/>
+    <EditText
+            android:id="@+id/adres"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginBottom="4dp"
+            android:hint="Adres restauracji" android:inputType="text"/>
+    <EditText
+            android:id="@+id/typ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginBottom="4dp"
+            android:hint="Typ restauracji" android:inputType="text"/>
+
+</LinearLayout>

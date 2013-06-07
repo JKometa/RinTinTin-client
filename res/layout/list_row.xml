@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/white">
+    <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignParentTop="true"
+            android:id="@+id/top">
+        <TextView
+                android:id="@+id/loginy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@+id/label"
+                android:textStyle="italic"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="20sp"
+                android:paddingBottom="15sp"/>
+        <TextView
+                android:id="@+id/data"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@+id/label"
+                android:textStyle="italic"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="20sp"
+                android:paddingBottom="15sp" android:layout_alignBottom="@+id/loginy" android:layout_gravity="center_horizontal|top"/>
+    </LinearLayout>
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_below="@+id/top">
+        <TextView
+                android:id="@+id/comm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@+id/label"
+                android:textStyle="italic"
+                android:textColor="@android:color/holo_blue_dark"
+                android:textSize="15sp"
+                android:paddingBottom="15sp" android:layout_toRightOf="@+id/loginy" android:layout_alignTop="@+id/loginy"/>
+    </LinearLayout>
+
+
+</RelativeLayout>

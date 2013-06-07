@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ <LinearLayout android:orientation="horizontal"
+               android:layout_height="fill_parent"
+               android:layout_width="fill_parent"
+               xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent">
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="38dp" android:layout_gravity="center_horizontal|bottom|left|top">
+            <Button style="@android:style/Widget.Holo.Button.Borderless" android:layout_width="160dp"
+                    android:layout_height="50dp" android:text="Dodaj" android:id="@+id/dodaj"
+                    android:layout_centerHorizontal="true" android:layout_alignBottom="@+id/comment"
+                    android:layout_gravity="center_vertical|right" android:textColor="@android:color/white"
+                    android:textColorHighlight="@android:color/holo_red_dark"
+                    android:shadowColor="@android:color/holo_blue_dark" android:clickable="true"
+                    android:textStyle="bold"/>
+            <Button
+                    android:layout_width="164dp"
+                    android:layout_height="50dp"
+                    android:text="Pobierz"
+                    android:id="@+id/pobierz" android:layout_centerHorizontal="true" android:layout_alignBottom="@+id/comment"
+                    android:layout_gravity="center_horizontal|top" style="@android:style/Widget.Holo.Button.Borderless"
+                    android:textColor="@android:color/white" android:textColorHighlight="@android:color/holo_red_dark"
+                    android:shadowColor="@android:color/holo_blue_dark" android:clickable="true"
+                    android:textStyle="bold" android:layout_marginTop="-5dp"
+                    />
+        </LinearLayout>
+        <ListView android:layout_height="wrap_content"
+                  android:layout_width="fill_parent"
+                  android:listSelector="@drawable/list_selector"
+                  android:dividerHeight="1dp"
+                  android:divider="#b5b5b5"
+                  android:id="@+id/list" android:paddingBottom="20dp" android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+</LinearLayout>
