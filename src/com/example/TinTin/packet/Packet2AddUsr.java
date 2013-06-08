@@ -17,15 +17,16 @@ public class Packet2AddUsr extends Packet {
         super(2);
         this.login = login;
         this.passwd = passwd;
+        this.setPacketString();
     }
 
 
+    //@TODO
+    protected void setPacketString() {
+        this.packetString = ("2" + "\n" + this.login + "\n" + this.passwd + "\n");
 
-
-
-    public byte[] getData() {
-        return ("2" + "\n" + this.login + "\n" + this.passwd + "\n").getBytes();
     }
+
 
     public String getLogin() {
         return login;
@@ -34,7 +35,6 @@ public class Packet2AddUsr extends Packet {
     public String getPasswd() {
         return passwd;
     }
-
 
 
 }

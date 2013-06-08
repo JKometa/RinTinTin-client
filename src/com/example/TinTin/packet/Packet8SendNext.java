@@ -11,13 +11,14 @@ public class Packet8SendNext extends Packet {
 
     public Packet8SendNext() {
         super(8);
+        this.setPacketString();
     }
 
-    public byte[] getData() {
-        return ("8" + "\n").getBytes();
+    //@TODO
+    protected void setPacketString() {
+        this.packetString = ("8" + "\n");
+
     }
-
-
 
 
 }

@@ -9,33 +9,38 @@ package com.example.TinTin.packet;
  */
 public class Packet11RespGetComments extends Packet {
 
-    private int usr_id;
+    private String login;
+    private String description;
+    private String date;
 
 
     public Packet11RespGetComments(byte[] data) {
-        super(0);
-        this.usr_id = parser.getUsrId(data);
+        super(11);
+        String[] parsed = parser.handleGetComments(new String(data));
+
+        this.login = parsed[0];
+        this.description = parsed[1];
+        this.date = parsed[2];
+
     }
 
+    //@TODO
+    protected void setPacketString() {
 
 
-    public Packet11RespGetComments(int user_id) {
-        super(0);
-        this.usr_id = user_id;
     }
 
-
-
-
-
-    public byte[] getData() {
-        return ("0" + "\n" + this.usr_id + "\n").getBytes();
+    public String getLogin() {
+        return this.login;
     }
 
-    public int getUsrId() {
-        return usr_id;
+    public String getDescription() {
+        return this.description;
     }
 
+    public String getDate() {
+        return this.date;
+    }
 
 
 }

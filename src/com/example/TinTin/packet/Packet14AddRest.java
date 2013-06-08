@@ -9,33 +9,24 @@ package com.example.TinTin.packet;
  */
 public class Packet14AddRest extends Packet {
 
-    private int usr_id;
+    private String name;
+    private String address;
+    private String type;
 
 
-    public Packet14AddRest(byte[] data) {
-        super(0);
-        this.usr_id = parser.getUsrId(data);
+    public Packet14AddRest(String nazwa, String adres, String typ) {
+        super(14);
+
+        this.name = nazwa;
+        this.address = adres;
+        this.type = typ;
+        this.setPacketString();
     }
 
 
+    //@TODO
+    protected void setPacketString() {
+        this.packetString = "14" + "\n" + this.name + "\n" + this.address + "\n" + this.type + "\n";
 
-    public Packet14AddRest(int user_id) {
-        super(0);
-        this.usr_id = user_id;
     }
-
-
-
-
-
-    public byte[] getData() {
-        return ("0" + "\n" + this.usr_id + "\n").getBytes();
-    }
-
-    public int getUsrId() {
-        return usr_id;
-    }
-
-
-
 }

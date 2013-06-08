@@ -9,33 +9,20 @@ package com.example.TinTin.packet;
  */
 public class Packet16DelComment extends Packet {
 
-    private int usr_id;
+    private int comment_id;
 
-
-    public Packet16DelComment(byte[] data) {
-        super(0);
-        this.usr_id = parser.getUsrId(data);
+    public Packet16DelComment(int comment_id) {
+        super(16);
+        this.comment_id = comment_id;
+        this.setPacketString();
     }
 
 
+    //@TODO
+    protected void setPacketString() {
+        this.packetString = "16" + "\n" + this.comment_id + "\n";
 
-    public Packet16DelComment(int user_id) {
-        super(0);
-        this.usr_id = user_id;
     }
-
-
-
-
-
-    public byte[] getData() {
-        return ("0" + "\n" + this.usr_id + "\n").getBytes();
-    }
-
-    public int getUsrId() {
-        return usr_id;
-    }
-
 
 
 }

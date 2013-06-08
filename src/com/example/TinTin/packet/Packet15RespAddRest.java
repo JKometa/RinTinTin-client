@@ -9,33 +9,24 @@ package com.example.TinTin.packet;
  */
 public class Packet15RespAddRest extends Packet {
 
-    private int usr_id;
-
+    private int state;
 
     public Packet15RespAddRest(byte[] data) {
-        super(0);
-        this.usr_id = parser.getUsrId(data);
+        super(15);
+        this.state = Integer.parseInt(parser.getData(new String(data)));
     }
 
 
+    //@TODO
+    protected void setPacketString() {
 
-    public Packet15RespAddRest(int user_id) {
-        super(0);
-        this.usr_id = user_id;
     }
 
-
-
-
-
-    public byte[] getData() {
-        return ("0" + "\n" + this.usr_id + "\n").getBytes();
+    /**
+     * @return Zwraca status czy się udało dodać czy nie
+     */
+    public int getState() {
+        return this.state;
     }
-
-    public int getUsrId() {
-        return usr_id;
-    }
-
-
 
 }

@@ -23,8 +23,8 @@ public class Packet7RespGetRest extends Packet {
         this.adres = restaurant[1];
         this.nazwa = restaurant[2];
         this.typ = restaurant[3];
+        this.setPacketString();
     }
-
 
 
     public Packet7RespGetRest(int id, String adres, String nazwa, String typ) {
@@ -33,32 +33,30 @@ public class Packet7RespGetRest extends Packet {
         this.adres = adres;
         this.nazwa = nazwa;
         this.typ = typ;
+        this.setPacketString();
     }
 
+    //@TODO
+    protected void setPacketString() {
+        this.packetString = ("7" + "\n" + this.id + "\n" + this.adres + "\n" + this.nazwa + "\n" + this.typ + "\n");
 
-
-
-
-    public byte[] getData() {
-        return ("7" + "\n" + this.id + "\n" + this.adres + "\n" + this.nazwa + "\n" + this.typ + "\n").getBytes();
     }
 
     public int getId() {
         return id;
     }
 
-    public String getAdres(){
+    public String getAdres() {
         return adres;
     }
 
-    public String getNazwa(){
+    public String getNazwa() {
         return nazwa;
     }
 
-    public String getTyp(){
+    public String getTyp() {
         return typ;
     }
-
 
 
 }

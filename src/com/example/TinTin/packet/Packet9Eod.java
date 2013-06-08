@@ -11,13 +11,14 @@ public class Packet9Eod extends Packet {
 
     public Packet9Eod() {
         super(9);
-
+        this.setPacketString();
     }
 
-    public byte[] getData() {
-        return ("9" + "\n").getBytes();
-    }
+    //@TODO
+    protected void setPacketString() {
+        this.packetString = ("9" + "\n");
 
+    }
 
 
 }

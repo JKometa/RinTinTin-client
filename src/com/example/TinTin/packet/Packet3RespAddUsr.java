@@ -15,27 +15,27 @@ public class Packet3RespAddUsr extends Packet {
     public Packet3RespAddUsr(byte[] data) {
         super(3);
         this.usr_id = parser.getUsrId(data);
+        this.setPacketString();
     }
-
 
 
     public Packet3RespAddUsr(int user_id) {
         super(3);
         this.usr_id = user_id;
+        this.setPacketString();
     }
 
 
+    //@TODO
+    protected void setPacketString() {
+        this.packetString = ("3" + "\n" + this.usr_id + "\n");
 
-
-
-    public byte[] getData() {
-        return ("3" + "\n" + this.usr_id + "\n").getBytes();
     }
+
 
     public int getUsrId() {
         return usr_id;
     }
-
 
 
 }

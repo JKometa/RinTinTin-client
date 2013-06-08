@@ -1,5 +1,7 @@
 package com.example.TinTin.packet;
 
+import java.util.Date;
+
 /**
  * Created with IntelliJ IDEA.
  * User: Modzel
@@ -9,33 +11,25 @@ package com.example.TinTin.packet;
  */
 public class Packet10GetComments extends Packet {
 
-    private int usr_id;
+    private int res_id;
+    private Date poczatek;
 
 
-    public Packet10GetComments(byte[] data) {
+    public Packet10GetComments(int resID, Date date) {
         super(10);
-        this.usr_id = parser.getUsrId(data);
+
+        this.res_id = resID;
+        this.poczatek = date;
+
+        if (this.poczatek == null)
+            this.poczatek = new Date();
+
+        this.setPacketString();
     }
 
+    @Override
+    protected void setPacketString() {
 
-
-    public Packet10GetComments(int user_id) {
-        super(10);
-        this.usr_id = user_id;
+        this.packetString = "10" + "\n" + this.res_id + "\n" + this.poczatek.toString() + "\n";
     }
-
-
-
-
-
-    public byte[] getData() {
-        return ("10" + "\n" + this.usr_id + "\n").getBytes();
-    }
-
-    public int getUsrId() {
-        return usr_id;
-    }
-
-
-
 }

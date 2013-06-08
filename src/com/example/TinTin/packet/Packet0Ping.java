@@ -15,27 +15,26 @@ public class Packet0Ping extends Packet {
     public Packet0Ping(byte[] data) {
         super(0);
         this.usr_id = parser.getUsrId(data);
+        this.setPacketString();
     }
-
 
 
     public Packet0Ping(int user_id) {
         super(0);
         this.usr_id = user_id;
+        this.setPacketString();
     }
 
 
+    protected void setPacketString() {
+        this.packetString = "0" + "\n" + this.usr_id + "\n";
 
-
-
-    public byte[] getData() {
-        return ("0" + "\n" + this.usr_id + "\n").getBytes();
     }
+
 
     public int getUsrId() {
         return usr_id;
     }
-
 
 
 }

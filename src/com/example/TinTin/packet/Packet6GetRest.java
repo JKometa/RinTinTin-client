@@ -12,25 +12,23 @@ public class Packet6GetRest extends Packet {
     private int date;
 
 
-
-
     public Packet6GetRest(int date) {
         super(6);
         this.date = date;
+        this.setPacketString();
     }
 
 
+    //@TODO
+    protected void setPacketString() {
+        this.packetString = ("6" + "\n" + 0 + "\n");
 
-
-
-    public byte[] getData() {
-        return ("6" + "\n" + 0 + "\n").getBytes();
     }
+
 
     public int getDate() {
         return date;
     }
-
 
 
 }

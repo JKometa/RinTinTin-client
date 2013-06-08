@@ -9,33 +9,22 @@ package com.example.TinTin.packet;
  */
 public class Packet13RespAddComment extends Packet {
 
-    private int usr_id;
+    private int comment_id;
 
 
     public Packet13RespAddComment(byte[] data) {
-        super(0);
-        this.usr_id = parser.getUsrId(data);
+        super(13);
+        this.comment_id = parser.getId(new String(data));
+
+    }
+
+    public int getComment_id() {
+        return this.comment_id;
     }
 
 
-
-    public Packet13RespAddComment(int user_id) {
-        super(0);
-        this.usr_id = user_id;
+    @Override
+    protected void setPacketString() {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
-
-
-
-
-
-    public byte[] getData() {
-        return ("0" + "\n" + this.usr_id + "\n").getBytes();
-    }
-
-    public int getUsrId() {
-        return usr_id;
-    }
-
-
-
 }
