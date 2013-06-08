@@ -67,9 +67,12 @@ public class MyActivity extends Activity{
         PoiList.lista = new ArrayList<Komentarz>();
         PoiList.lista = restauracje.getLista();
 
-        connection = new Connection(serverIpAddress, port);
+
         serializer = new Serializer();
         parser = new Parser();
+        connection = new Connection(serverIpAddress, port);
+
+
 
 
         net = new NetTask();
