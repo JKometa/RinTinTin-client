@@ -19,7 +19,7 @@ public class Packet16DelComment extends Packet {
 
 
     //@TODO
-    protected void setPacketString() {
+    public void setPacketString() {
         this.packetString = "16" + "\n" + this.comment_id + "\n";
 
     }

@@ -1,7 +1,5 @@
 package com.example.TinTin.packet;
 
-import java.util.Date;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Modzel
@@ -12,24 +10,23 @@ import java.util.Date;
 public class Packet10GetComments extends Packet {
 
     private int res_id;
-    private Date poczatek;
+    private long poczatek;
 
 
-    public Packet10GetComments(int resID, Date date) {
+    public Packet10GetComments(int resID, long date) {
         super(10);
 
         this.res_id = resID;
         this.poczatek = date;
 
-        if (this.poczatek == null)
-            this.poczatek = new Date();
+
 
         this.setPacketString();
     }
 
     @Override
-    protected void setPacketString() {
+    public void setPacketString() {
 
-        this.packetString = "10" + "\n" + this.res_id + "\n" + this.poczatek.toString() + "\n";
+        this.packetString = "10" + "\n" + this.res_id + "\n" + poczatek + "\n";
     }
 }

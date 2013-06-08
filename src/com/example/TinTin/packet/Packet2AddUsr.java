@@ -22,7 +22,7 @@ public class Packet2AddUsr extends Packet {
 
 
     //@TODO
-    protected void setPacketString() {
+    public void setPacketString() {
         this.packetString = ("2" + "\n" + this.login + "\n" + this.passwd + "\n");
 
     }

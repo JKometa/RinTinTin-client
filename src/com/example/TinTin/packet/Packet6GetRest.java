@@ -20,7 +20,7 @@ public class Packet6GetRest extends Packet {
 
 
     //@TODO
-    protected void setPacketString() {
+    public void setPacketString() {
         this.packetString = ("6" + "\n" + 0 + "\n");
 
     }

@@ -26,7 +26,7 @@ public class Packet0Ping extends Packet {
     }
 
 
-    protected void setPacketString() {
+    public void setPacketString() {
         this.packetString = "0" + "\n" + this.usr_id + "\n";
 
     }

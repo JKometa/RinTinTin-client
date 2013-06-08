@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -12,8 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.*;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,10 +33,17 @@ public class CustomizedListView extends Activity {
     String opis;
     int idRes;
     long date;
-    private final Charset UTF8_CHARSET = Charset.forName("UTF-8");
+
     int type = 0;
     private ProgressDialog progressDialog2;
     boolean isShowing = false;
+    public static boolean running;
+    static public  Object signal = new Object();
+    static public  Object destroySignal = new Object();
+    private NetTask net;
+    private DestroyTask destroy;
+    private boolean doTheMagic = true;
+    private static RecivedObject recivedObject;
 
 
     @Override
@@ -45,7 +51,7 @@ public class CustomizedListView extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.poilist);
 
-
+        running = true;
         list = (ListView) findViewById(R.id.list);
 
         Bundle extras = getIntent().getExtras();
@@ -53,34 +59,10 @@ public class CustomizedListView extends Activity {
 
         // Getting adapter by passing xml data ArrayList
         adapter = new LazyAdapter(this, MyActivity.restauracje.getListaOnlineId(idRes));
-        Log.d("results", "2");
+
         list.setAdapter(adapter);
-        Log.d("results", "3");
-        Thread listener = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(true){
-                    byte[] buffer = new byte[60];
-                    try {
-                        if(MyActivity.input != null &&  MyActivity.input.available() > 0)
-                            MyActivity.input.read(buffer);
-                        if(buffer != null)
-                            type = MyActivity.parsePacket(buffer);
-                    } catch (IOException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
-
-                    if(type == 9) {
-                        progressDialog2.dismiss();
-                        isShowing = false;
-                        type = 0;
 
 
-                    }
-                }
-            }
-        });
-        listener.start();
 
 
         Button dodaj = (Button) findViewById(R.id.dodaj);
@@ -109,21 +91,8 @@ public class CustomizedListView extends Activity {
                             public void onClick(DialogInterface dialog, int id) {
                                 opis = commentText.getText().toString();
                                 Log.d("Komentarz", opis);
-                                byte[] wyslij = new byte[0];
+                                MyActivity.serializer.sendComment(MyActivity.restauracje.getUsrId().user_id, idRes, dataDoBazy, opis);
 
-                                wyslij = (12 + "\n" + MyActivity.restauracje.getUsrId().user_id + "\n" + idRes+1 + "\n" + dataDoBazy + "\n" + opis + "\n").getBytes(UTF8_CHARSET);
-
-                                Log.d("Komentarz", (12 + "\n" + MyActivity.restauracje.getUsrId().user_id + "\n" + idRes + "\n" + date + "\n" + opis + "\n"));
-                                if (MyActivity.output != null) {
-                                    try {
-                                        MyActivity.output.write(wyslij);
-                                        MyActivity.output.flush();
-                                    } catch (IOException e) {
-                                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                    }
-
-                                } else
-                                    MyActivity.restauracje.add(MyActivity.restauracje.getUsrId().user_id, idRes, opis, dataDoBazy);
 
                             }
                         })
@@ -168,29 +137,19 @@ public class CustomizedListView extends Activity {
                 else{
                     commentDate = 0;
                 }
-                byte[] wyslij = (10+"\n"+idRes+"\n"+commentDate+"\n").getBytes();
+                MyActivity.serializer.getComments(idRes, commentDate);
 
-                try {
-                    if(MyActivity.output != null){
-                        progressDialog2 = new ProgressDialog(CustomizedListView.this);
-                        progressDialog2.setTitle("Pobieram komentarze ");
-                        progressDialog2.setMessage("Proszę chwilę poczekać...");
-                        progressDialog2.setIndeterminate(true);
-                        progressDialog2.setCancelable(false);
-                        isShowing = true;
-                        progressDialog2.show();
-                        MyActivity.output.write(wyslij);
-                        MyActivity.output.flush();
+
+
+                    if(MyActivity.connection.getConnectionState()){
+                        new downloadAsyncTask().execute();;
 
                         //MyActivity.restauracje.sruOnline();
                     }
                     else{
                         Toast.makeText(CustomizedListView.this, "Brak polaczenia", Toast.LENGTH_LONG).show();
                     }
-                } catch (IOException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                }
-                adapter.notifyDataSetChanged();
+
             }
 
 
@@ -212,21 +171,7 @@ public class CustomizedListView extends Activity {
                         @Override
 
                         public void onClick(DialogInterface dialog, int id) {
-                            byte[] wyslij = (16 + "\n" + MyActivity.restauracje.getListaOnline().get(position).id+"\n").getBytes();
-
-                            try {
-                                if(MyActivity.output != null){
-                                    MyActivity.output.write(wyslij);
-                                    MyActivity.output.flush();
-                                }
-                                else{
-                                    Toast.makeText(CustomizedListView.this, "Brak polaczenia", Toast.LENGTH_LONG).show();
-                                }
-                            } catch (IOException e) {
-                                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                            }
-
-
+                            MyActivity.serializer.deleteComment(MyActivity.restauracje.getListaOnline().get(position).id);
 
                         }
                     })
@@ -243,9 +188,111 @@ public class CustomizedListView extends Activity {
 
     }
 
+    private class downloadAsyncTask extends AsyncTask<Void, Void, Void> {
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            // TODO Auto-generated method stub
+            super.onPreExecute();
+            progressDialog = new ProgressDialog(CustomizedListView.this);
+            progressDialog.setTitle("Pobieram restauracje ");
+            progressDialog.setMessage("Proszę chwilę poczekać...");
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            isShowing = true;
+            progressDialog.show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            // TODO Auto-generated method stub
+            MyActivity.restauracje.sruRes();
+            MyActivity.serializer.getRest();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            // TODO Auto-generated method stub
+            super.onPostExecute(result);
+            while (true){
+                if((type == 9)) {
+
+                    isShowing = false;
+                    type = 0;
+                    break;
+
+                }
+            }
+
+            adapter.notifyDataSetChanged();
+            progressDialog.dismiss();
+
+        }
+
+    }
+
     protected void onDestroy(){
         super.onDestroy();
         //MyActivity.restauracje.sruOnline();
 
+    }
+
+    public void onResume(){
+        super.onResume();
+        running = true;
+
+    }
+
+    public void onPause(){
+        super.onPause();
+        running = false;
+    }
+
+
+    private class NetTask extends AsyncTask<Void, Void, Void>{
+
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            while(doTheMagic){
+                try {
+                    signal.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+                recivedObject = Serializer.reciveOject();
+                if(recivedObject.getId() == 9)
+                    type = 9;
+                MyActivity.actionSwitcher(recivedObject);
+            }
+
+
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        protected void onPostExecute(Void resault){
+
+        }
+    }
+
+    private class DestroyTask extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                destroySignal.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            doTheMagic = false;
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
 }

@@ -1,7 +1,5 @@
 package com.example.TinTin.packet;
 
-import java.util.Date;
-
 /**
  * Created with IntelliJ IDEA.
  * User: Modzel
@@ -13,10 +11,10 @@ public class Packet12AddComment extends Packet {
 
     private int usr_id;
     private int res_id;
-    private Date date;
+    private String date;
     private String description;
 
-    public Packet12AddComment(int usr_id, int res_id, Date date, String desc) {
+    public Packet12AddComment(int usr_id, int res_id, String date, String desc) {
         super(12);
         this.usr_id = usr_id;
         this.res_id = res_id;
@@ -26,8 +24,8 @@ public class Packet12AddComment extends Packet {
     }
 
     //@TODO
-    protected void setPacketString() {
-        this.packetString = "12" + "\n" + this.usr_id + "\n" + this.res_id + "\n" + date.toString() + "\n" + this.description + "\n";
+    public void setPacketString() {
+        this.packetString = "12" + "\n" + this.usr_id + "\n" + this.res_id + "\n" + date + "\n" + this.description + "\n";
     }
 
 }

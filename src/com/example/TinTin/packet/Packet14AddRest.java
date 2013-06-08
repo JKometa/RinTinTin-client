@@ -25,7 +25,7 @@ public class Packet14AddRest extends Packet {
 
 
     //@TODO
-    protected void setPacketString() {
+    public void setPacketString() {
         this.packetString = "14" + "\n" + this.name + "\n" + this.address + "\n" + this.type + "\n";
 
     }

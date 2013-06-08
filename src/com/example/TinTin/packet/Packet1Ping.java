@@ -28,7 +28,7 @@ public class Packet1Ping extends Packet {
 
 
     //@TODO
-    protected void setPacketString() {
+    public void setPacketString() {
         this.packetString = ("1" + "\n" + this.usr_id + "\n");
 
     }

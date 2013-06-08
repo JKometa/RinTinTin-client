@@ -15,7 +15,7 @@ public class Packet8SendNext extends Packet {
     }
 
     //@TODO
-    protected void setPacketString() {
+    public void setPacketString() {
         this.packetString = ("8" + "\n");
 
     }

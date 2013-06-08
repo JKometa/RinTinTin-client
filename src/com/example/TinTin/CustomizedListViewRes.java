@@ -32,13 +32,20 @@ public class CustomizedListViewRes extends Activity {
     private ProgressDialog progressDialog2;
     int type = 0;
     boolean isShowing = false;
+    public static boolean running;
+    static public  Object signal = new Object();
+    static public  Object destroySignal = new Object();
+    private NetTask net;
+    private DestroyTask destroy;
+    private boolean doTheMagic = true;
+    private static RecivedObject recivedObject;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.poilist);
 
-
+        running = true;
         list = (ListView) findViewById(R.id.list);
         Baza restauracje = new Baza(getApplicationContext());
 
@@ -58,28 +65,7 @@ public class CustomizedListViewRes extends Activity {
         Log.d("results", "2");
         list.setAdapter(adapter);
         Log.d("results", "3");
-        Thread listener = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while(true){
-                    try {
-                        byte[] buffer = new byte[300];
-                        if(MyActivity.input != null &&  MyActivity.input.available() > 0)
-                            MyActivity.input.read(buffer);
-                        if(buffer != null) {
-                            type =MyActivity.parsePacket(buffer);
-                            //Log.d("odSerwera", buffer.toString());
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    }
 
-
-
-                }
-            }
-        });
-        listener.start();
 
         Button dodaj = (Button) findViewById(R.id.dodaj);
         Button pobierz = (Button) findViewById(R.id.pobierz);
@@ -106,21 +92,10 @@ public class CustomizedListViewRes extends Activity {
                             public void onClick(DialogInterface dialog, int id) {
                                 nazwa = nazwaTex.getText().toString();
                                 adres = adresText.getText().toString();
-                                String dupa = nazwaTex.toString();
-
                                 typ = typText.getText().toString();
-                                byte[] wyslij = (14+"\n"+nazwa+"\n"+adres+"\n"+typ+"\n").getBytes();
-                                try {
-                                    if(MyActivity.output != null &&  MyActivity.input.available() > 0){
-                                        MyActivity.output.write(wyslij);
-                                        MyActivity.output.flush();
-                                    }
-                                    else{
-                                        Toast.makeText(CustomizedListViewRes.this, "Brak polaczenia", Toast.LENGTH_LONG).show();
-                                    }
-                                } catch (IOException e) {
-                                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                                }
+                                MyActivity.serializer.sendRest(nazwa, adres, typ);
+
+
                                 int index = MyActivity.restauracje.getListaRes().size();
                                 MyActivity.restauracje.addRes(index, adres, nazwa, typ);
 
@@ -186,21 +161,8 @@ public class CustomizedListViewRes extends Activity {
         protected Void doInBackground(Void... params) {
             // TODO Auto-generated method stub
             MyActivity.restauracje.sruRes();
-            byte[] wyslij = (6+"\n"+0+"\n").getBytes();
+            MyActivity.serializer.getRest();
 
-            try {
-                if(MyActivity.output != null){
-
-                    MyActivity.output.write(wyslij);
-                    MyActivity.output.flush();
-
-                }
-                else{
-                    Toast.makeText(CustomizedListViewRes.this, "Brak polaczenia", Toast.LENGTH_LONG).show();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            }
             return null;
         }
 
@@ -211,19 +173,73 @@ public class CustomizedListViewRes extends Activity {
             while (true){
             if((type == 9)) {
 
-
                 isShowing = false;
                 type = 0;
                 break;
 
              }
             }
-            if (MyActivity.input != null)
-                    adapter.notifyDataSetChanged();
+
+            adapter.notifyDataSetChanged();
             progressDialog.dismiss();
 
         }
 
+    }
+
+    public void onResume(){
+        super.onResume();
+        running = true;
+
+    }
+
+    public void onPause(){
+        super.onPause();
+        running = false;
+    }
+
+    private class NetTask extends AsyncTask<Void, Void, Void>{
+
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            while(doTheMagic){
+                try {
+                    signal.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+                recivedObject = Serializer.reciveOject();
+                if(recivedObject.getId() == 9)
+                    type = 9;
+                MyActivity.actionSwitcher(recivedObject);
+            }
+
+
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        protected void onPostExecute(Void resault){
+
+        }
+    }
+
+    private class DestroyTask extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                destroySignal.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            doTheMagic = false;
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
 
 

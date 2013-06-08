@@ -1,5 +1,8 @@
 package com.example.TinTin;
 
+import android.os.AsyncTask;
+import com.example.TinTin.packet.*;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -11,6 +14,17 @@ import java.security.NoSuchAlgorithmException;
  * To change this template use File | Settings | File Templates.
  */
 public class Parser {
+
+    static public  Object signal = new Object();
+    static public  Object destroySignal = new Object();
+    private static boolean doTheMagic = true;
+    private static byte[] data;
+
+
+
+    public byte[] recivedData(){
+        return data;
+    }
     public boolean handleDeleteComment(String message) {
         int response =  getId(message);
         if(response == 1){
@@ -61,15 +75,6 @@ public class Parser {
             String resId =  getStringFromPacket(data);
 
             data = getData(data);
-//            DateFormat df = new DateFormat();
-//            df.format("yyyy-MM-ddThh:mm:ss", new Date());
-//            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss");
-//            try {
-//                Date nowaData = format.parse(data);
-//                data = nowaData.toString();
-//            } catch (ParseException e) {
-//                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-//            }
 
             String resName = getStringFromPacket(data);
             data = getData(data);
@@ -165,5 +170,97 @@ public class Parser {
         int user_id = Integer.parseInt(dane);
         return user_id;
 
+    }
+
+    public static int getLength(byte[] buffer) {
+        String msg = buffer.toString();
+        int length = Integer.parseInt(msg.substring(0, msg.indexOf("\n")));
+
+        return length;
+    }
+
+    public byte[] getPacketByte(byte[] buffer ) {
+        String msg = buffer.toString();
+        int index = msg.indexOf("\n");
+        msg = msg.substring(index+1);
+        return msg.getBytes();
+    }
+
+    public void sendOffline(Packet12AddComment packet) {
+        MyActivity.connection.send(packet.getPacket());
+
+    }
+
+    public void sendAddUser(Packet2AddUsr packet) {
+        MyActivity.connection.send(packet.getPacket());
+    }
+
+    public void sendNext(Packet8SendNext packet) {
+        MyActivity.connection.send(packet.getPacket());
+    }
+
+    public void sendPing(Packet1Ping packet) {
+        MyActivity.connection.send(packet.getPacket());
+    }
+
+    public void sendRest(Packet14AddRest packet) {
+        MyActivity.connection.send(packet.getPacket());
+    }
+
+    public void sendGetRest(Packet6GetRest packet) {
+        MyActivity.connection.send(packet.getPacket());
+    }
+
+    public void sendAddComment(Packet12AddComment packet) {
+        MyActivity.connection.send(packet.getPacket());
+    }
+
+    public void sendGetComments(Packet10GetComments packet) {
+        MyActivity.connection.send(packet.getPacket());
+    }
+
+    public void sendDeleteComment(Packet16DelComment packet) {
+        MyActivity.connection.send(packet.getPacket());
+    }
+
+    static private class ParserTask extends AsyncTask<Void, Void, Void> {
+
+        protected void onPreExecute(){
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            while (doTheMagic){
+                try {
+                    signal.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+                }
+                data = MyActivity.connection.getData();
+                Serializer.signal.notify();
+            }
+            return null;
+        }
+
+        protected void onPostExecute(Void resault){
+            Connection.destroySignal.notify();
+        }
+    }
+
+
+    static private class DestroyTask extends AsyncTask<Void, Void, Void>{
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                destroySignal.wait();
+            } catch (InterruptedException e) {
+                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            }
+            doTheMagic = false;
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
 }

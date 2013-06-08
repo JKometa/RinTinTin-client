@@ -88,7 +88,7 @@ public abstract class Packet {
      *
      * @return pakiet z wilkoscia
      */
-    protected byte[] getPacket() {
+    public byte[] getPacket() {
 
         byte[] data = new byte[0];
         try {
